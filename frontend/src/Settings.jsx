@@ -118,17 +118,6 @@ const Settings = ({ userId }) => {
             <h1 className="titlesec">MODIFICA IMPOSTAZIONI</h1>
 
             <label className="form-label">
-              ANNO SCOPERTA MALATTIA
-              <input
-                type="number"
-                name="anno_scoperta"
-                value={settings.anno_scoperta}
-                onChange={handleChange}
-                className="form-input"
-              />
-            </label>
-
-            <label className="form-label">
               ANNO DI NASCITA
               <input
                 type="number"
