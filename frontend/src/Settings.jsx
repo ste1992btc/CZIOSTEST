@@ -4,18 +4,10 @@ import "./App.css";
 
 const Settings = ({ userId }) => {
   const [settings, setSettings] = useState({
-    ic_mattino: "",
-    ic_pomeriggio: "",
-    ic_sera: "",
-    fsi: "",
-    glicemia_target: "",
-    anno_scoperta: "",
     anno_nascita: "",
     citta: "",
     peso: "",
     altezza: "",
-    device: "",
-    centro_diabetologico: "",
     timezone: "" // aggiornato
   });
   const [loading, setLoading] = useState(true);
@@ -39,7 +31,7 @@ const Settings = ({ userId }) => {
       const { data, error } = await supabase
         .from("users")
         .select(
-          "ic_mattino, ic_pomeriggio, ic_sera, fsi, glicemia_target, anno_scoperta, anno_nascita, citta, peso, altezza, device, centro_diabetologico, timezone"
+          "anno_nascita, citta, peso, altezza, timezone"
         )
         .eq("id", userId)
         .single();
@@ -50,18 +42,10 @@ const Settings = ({ userId }) => {
       }
 
       setSettings({
-        ic_mattino: data.ic_mattino ?? "",
-        ic_pomeriggio: data.ic_pomeriggio ?? "",
-        ic_sera: data.ic_sera ?? "",
-        fsi: data.fsi ?? "",
-        glicemia_target: data.glicemia_target ?? "",
-        anno_scoperta: data.anno_scoperta ?? "",
         anno_nascita: data.anno_nascita ?? "",
         citta: data.citta ?? "",
         peso: data.peso ?? "",
         altezza: data.altezza ?? "",
-        device: data.device ?? "",
-        centro_diabetologico: data.centro_diabetologico ?? "",
         timezone: data.timezone ?? "Europe/Rome"
       });
 
@@ -82,18 +66,10 @@ const Settings = ({ userId }) => {
     const { error } = await supabase
       .from("users")
       .update({
-        ic_mattino: settings.ic_mattino ? parseFloat(settings.ic_mattino) : null,
-        ic_pomeriggio: settings.ic_pomeriggio ? parseFloat(settings.ic_pomeriggio) : null,
-        ic_sera: settings.ic_sera ? parseFloat(settings.ic_sera) : null,
-        fsi: settings.fsi ? parseFloat(settings.fsi) : null,
-        glicemia_target: settings.glicemia_target ? parseFloat(settings.glicemia_target) : null,
-        anno_scoperta: settings.anno_scoperta ? parseInt(settings.anno_scoperta) : null,
         anno_nascita: settings.anno_nascita ? parseInt(settings.anno_nascita) : null,
         citta: settings.citta,
         peso: settings.peso ? parseFloat(settings.peso) : null,
         altezza: settings.altezza ? parseFloat(settings.altezza) : null,
-        device: settings.device,
-        centro_diabetologico: settings.centro_diabetologico,
         timezone: settings.timezone // aggiornato
       })
       .eq("id", userId);
@@ -140,75 +116,6 @@ const Settings = ({ userId }) => {
         <form onSubmit={handleSubmit} className="settings-form">
           <div className="card-section card-green">
             <h1 className="titlesec">MODIFICA IMPOSTAZIONI</h1>
-
-            {/* --- IC --- */}
-            <label className="form-label">
-              IC MATTINO (carboidrati per unità di insulina)
-              <input
-                type="number"
-                placeholder="Ic dalle ore 6 alle 10"
-                name="ic_mattino"
-                value={settings.ic_mattino}
-                onChange={handleChange}
-                className="form-input"
-                step="0.1"
-                required
-              />
-            </label>
-
-            <label className="form-label">
-              IC POMERIGGIO (carboidrati per unità di insulina)
-              <input
-                type="number"
-                placeholder="Ic dalle ore 10 alle 16"
-                name="ic_pomeriggio"
-                value={settings.ic_pomeriggio}
-                onChange={handleChange}
-                className="form-input"
-                step="0.1"
-                required
-              />
-            </label>
-
-            <label className="form-label">
-              IC SERA (carboidrati per unità di insulina)
-              <input
-                type="number"
-                placeholder="Ic dalle ore 16 alle 22"
-                name="ic_sera"
-                value={settings.ic_sera}
-                onChange={handleChange}
-                className="form-input"
-                step="0.1"
-                required
-              />
-            </label>
-
-            {/* --- ALTRE IMPOSTAZIONI --- */}
-            <label className="form-label">
-              FSI (mg/dL per 1 unità di insulina)
-              <input
-                type="number"
-                name="fsi"
-                value={settings.fsi}
-                onChange={handleChange}
-                className="form-input"
-                step="0.1"
-                required
-              />
-            </label>
-
-            <label className="form-label">
-              GLICEMIA TARGET (mg/dL)
-              <input
-                type="number"
-                name="glicemia_target"
-                value={settings.glicemia_target}
-                onChange={handleChange}
-                className="form-input"
-                required
-              />
-            </label>
 
             <label className="form-label">
               ANNO SCOPERTA MALATTIA
@@ -264,28 +171,6 @@ const Settings = ({ userId }) => {
                 onChange={handleChange}
                 className="form-input"
                 step="0.1"
-              />
-            </label>
-
-            <label className="form-label">
-              DEVICE USATO PER SOMMINISTRAZIONE INSULINA
-              <input
-                type="text"
-                name="device"
-                value={settings.device}
-                onChange={handleChange}
-                className="form-input"
-              />
-            </label>
-
-            <label className="form-label">
-              CENTRO DIABETOLOGICO DI RIFERIMENTO
-              <input
-                type="text"
-                name="centro_diabetologico"
-                value={settings.centro_diabetologico}
-                onChange={handleChange}
-                className="form-input"
               />
             </label>
 
