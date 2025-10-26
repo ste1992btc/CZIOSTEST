@@ -18,6 +18,7 @@ const allowedOrigins = [
   "https://localhost",
   "http://10.0.2.2",
   "https://cz4.netlify.app",
+  "https://cz5.netlify.app",
   "ionic://localhost"
 ];
 
