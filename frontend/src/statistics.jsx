@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";   // 👈 import
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer
+} from "recharts";
 import "./App.css";
 
 const Statistics = ({ userId }) => {
   const [logs, setLogs] = useState([]);
-  const navigate = useNavigate();
+  const [average, setAverage] = useState(null);
+  const navigate = useNavigate();   // 👈 hook navigazione
 
   useEffect(() => {
     const fetchLogs = async () => {
       const { data, error } = await supabase
         .from("insulin_logs")
-        .select("id, carboidrati, created_at, image_url")
+        .select("id, carboidrati, insulina_calcolata, glicemia, created_at, image_url") // 👈 include id
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
@@ -21,6 +25,10 @@ const Statistics = ({ userId }) => {
       }
 
       setLogs(data);
+
+      const total = data.reduce((sum, log) => sum + log.insulina_calcolata, 0);
+      const avg = data.length ? total / data.length : 0;
+      setAverage(Math.round(avg * 10) / 10);
     };
 
     if (userId) fetchLogs();
@@ -39,6 +47,12 @@ const Statistics = ({ userId }) => {
     return dateUTC.toLocaleString('it-IT', options);
   };
 
+  const chartData = logs.map((log) => ({
+    time: formatTime(log.created_at),
+    glicemia: log.glicemia,
+    carboidrati: log.carboidrati,
+  }));
+
   return (
     <div className="container">
       <div className="header-with-button">
@@ -52,11 +66,65 @@ const Statistics = ({ userId }) => {
       </div>
 
       <p className="instructions">
-        QUI PUOI VISUALIZZARE I TUOI LOG RECENTI E LE FOTO DEI PASTI.
+        QUI PUOI VISUALIZZARE I TUOI CALCOLI RECENTI, LA MEDIA DELLE UNITA' DI INSULINA E UN GRAFICO DELLE RILEVAZIONI.
       </p>
 
       <div className="card-section card-green">
-        <h2 className="titlesec">📋 ULTIMI LOG</h2>
+        <h2 className="titlesec">MEDIA UNITA' INSULINICHE</h2>
+        {average !== null ? (
+          <p className="instructions" style={{ fontSize: "1.2rem" }}>
+            MEDIA DELLE ULTIME DOSI: <b>{average} u</b>
+          </p>
+        ) : (
+          <p>Caricamento in corso...</p>
+        )}
+      </div>
+
+      <div className="card-section card-blue">
+        <h2 className="titlesec">📈 ANDAMENTO GLICEMIA / CARBOIDRATI</h2>
+        {logs.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={[...chartData].reverse()} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
+              <XAxis
+                dataKey="time"
+                tick={{ fontSize: 10 }}
+                angle={-30}
+                textAnchor="end"
+                height={60}
+              />
+              <YAxis />
+              <Tooltip
+                contentStyle={{ backgroundColor: "#f9f9f9", borderRadius: "10px", border: "1px solid #ccc" }}
+                labelStyle={{ fontWeight: "bold" }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Line
+                type="monotone"
+                dataKey="glicemia"
+                stroke="#007bff"
+                strokeWidth={2.5}
+                name="Glicemia (mg/dL)"
+                dot={{ r: 3 }}
+                activeDot={{ r: 6 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="carboidrati"
+                stroke="#facc15"
+                strokeWidth={2.5}
+                name="Carboidrati (g)"
+                dot={{ r: 3 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <p>Nessun dato disponibile per il grafico.</p>
+        )}
+      </div>
+
+      <div className="card-section card-green">
+        <h2 className="titlesec">📋 ULTIMI CALCOLI</h2>
         {logs.length > 0 ? (
           <div style={{ overflowX: "auto" }}>
             <table className="stats-table">
@@ -64,15 +132,17 @@ const Statistics = ({ userId }) => {
                 <tr>
                   <th>🕒 ORARIO</th>
                   <th>📷</th>
+                  <th>GLICEMIA</th>
                   <th>CARBOIDRATI</th>
+                  <th>INSULINA</th>
                 </tr>
               </thead>
               <tbody>
                 {logs.map((log) => (
                   <tr
                     key={log.id}
-                    onClick={() => navigate(`/log/${log.id}`)}
-                    style={{ cursor: "pointer" }}
+                    onClick={() => navigate(`/log/${log.id}`)} // 👈 click naviga
+                    style={{ cursor: "pointer" }} // 👈 indica cliccabile
                   >
                     <td>{formatTime(log.created_at)}</td>
                     <td>
@@ -92,7 +162,9 @@ const Statistics = ({ userId }) => {
                         "-"
                       )}
                     </td>
+                    <td>{log.glicemia || "-"}</td>
                     <td>{log.carboidrati} g</td>
+                    <td>{log.insulina_calcolata} u</td>
                   </tr>
                 ))}
               </tbody>

@@ -14,12 +14,7 @@ body {
   margin: 0 auto;
   padding: 2rem 1rem;
   text-align: center;
-
-  /* 🔒 Sicurezza: spazio sufficiente per tutti i device */
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 140px);
-
-  /* fallback universale per browser non iOS */
-  padding-bottom: max(140px, calc(env(safe-area-inset-bottom, 0px) + 100px));
+  padding-bottom: 100px; /* Evita che il contenuto finisca sotto la barra */
 }
 
 /* --- Titoli --- */
@@ -445,14 +440,14 @@ body {
   gap: 1rem;
   justify-content: center;
   margin-top: 1rem;
-  min-height: 40px; 
+  min-height: 60px; /* più spazio */
 }
 
 .spinner {
   width: 16px;
   height: 16px;
   border: 3px solid #ccc;
-  border-top: 3px solid #3db18b;
+  border-top: 3px solid #3390B3;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   flex-shrink: 0; 
@@ -460,11 +455,19 @@ body {
 
 .loading-text {
   font-style: italic;
-  font-size: 1rem;
+  font-size: 1.2rem; /* più grande */
   color: #3390B3;
-  animation: fadeIn 0.3s ease-in-out;
-  min-width: 200px; 
+  min-width: 200px;
   max-width: 300px;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
 }
 
 @keyframes spin {
@@ -538,6 +541,8 @@ body {
   max-width: 600px;
   color: #3390B3;
   border: none;
+  position: relative;    /* necessario per contenuto sopra */
+  overflow: hidden;   
 }
 
 .wizard-card:hover {
@@ -553,6 +558,8 @@ body {
   gap: 1rem;
   padding: 0.5rem;
   box-sizing: border-box;
+  position: relative;
+  z-index: 2;
 }
 
 .wizard-card .preview-image {
@@ -696,6 +703,7 @@ body {
 
 
 .back-button {
+  position: relative;
   background-color: #3390B3; /* blu */
   color: #ffd24d;            /* testo giallo */
   font-size: 1rem;
@@ -709,6 +717,7 @@ body {
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s, transform 0.2s;
+  z-index: 2;
 }
 
 .back-button:hover {
@@ -747,17 +756,55 @@ body {
   background: #ffd24d;
   border-radius: 12px;
   padding: 1rem 1.2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(155, 127, 127, 0.08);
   width: 90%;
   max-width: 420px;
   text-align: center;
 }
 
-.bottom-bar {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+.pulse-border {
+  animation: pulse 0.8s infinite;
+  border: 2px solid #3390B3 !important;
 }
 
-.container {
-  overflow-y: auto;
-  min-height: 100vh;
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(51, 145, 179, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(51, 144, 179, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(51, 144, 179, 0);
+  }
+}
+
+.liquid-ether-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.liquid-ether-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;           /* sotto il contenuto */
+}
+
+
+.liquid-ether-content {
+  position: relative;
+  z-index: 2;                /* sopra il LiquidEther */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  pointer-events: none;      /* opzionale, così il mouse passa attraverso il liquido se vuoi */
 }

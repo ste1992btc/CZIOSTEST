@@ -29,6 +29,8 @@ const LogDetail = () => {
     fetchLog();
   }, [id]);
 
+  const roundHalf = (num) => Math.round(num * 2) / 2;
+
   const formatTime = (isoString) => {
     const utcString = isoString.endsWith("Z") ? isoString : isoString + "Z";
     const dateUTC = new Date(utcString);
@@ -63,10 +65,14 @@ const LogDetail = () => {
 
       <div className="card-section card-blue">
         <p className="instructions"><b>DATA:</b> {formatTime(log.created_at)}</p>
+        <p className="instructions"><b>GLICEMIA:</b> {log.glicemia} mg/dL</p>
         <p className="instructions"><b>CARBOIDRATI:</b> {log.carboidrati} g</p>
         <p className="instructions"><b>PROTEINE:</b> {log.proteine} g</p>
         <p className="instructions"><b>GRASSI:</b> {log.grassi} g</p>
         <p className="instructions"><b>CALORIE:</b> {log.calorie} kcal</p>
+        <p className="instructions"><b>INSULINA CALCOLATA:</b> {roundHalf(parseFloat(log.insulina_calcolata))} u</p>
+        <p className="instructions"><b>INSULINA AGGIUNTIVA PANKOWSKA:</b> {roundHalf(parseFloat(log.insulina_kowalska))} u</p>
+
 
         {imageUrl ? (
           <img
@@ -80,7 +86,8 @@ const LogDetail = () => {
         )}
 
         <p className="instructions"><b>RISULTATO AI:</b> {log.risultato_ai || "-"}</p>
-        <p className="instructions"><b>DESCRIZIONE INSERITA:</b> {log.descrizione_inserita || "-"}</p>
+        <p className="instructions"><b>DESCRIZIONE INSERITA</b> {log.descrizione_inserita || "-"}</p>
+        <p className="instructions"><b>NOTE:</b> {log.note || "-"}</p>
 
         {/* Grafico a torta */}
         <div

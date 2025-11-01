@@ -9,10 +9,20 @@ const Auth = ({ onLogin }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [icMattino, setIcMattino] = useState("");
+  const [icPomeriggio, setIcPomeriggio] = useState("");
+  const [icSera, setIcSera] = useState("");
+
+  const [fsi, setFsi] = useState("");
+  const [target, setTarget] = useState("");
+  const [annoScoperta, setAnnoScoperta] = useState("");
   const [annoNascita, setAnnoNascita] = useState("");
   const [citta, setCitta] = useState("");
   const [peso, setPeso] = useState("");
   const [altezza, setAltezza] = useState("");
+  const [device, setDevice] = useState("");
+  const [centro, setCentro] = useState("");
   const [error, setError] = useState("");
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -21,12 +31,27 @@ const Auth = ({ onLogin }) => {
   const [wizardStarted, setWizardStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
+  const normalizeIC = (value) => {
+    if (!value) return null;
+    const trimmed = value.trim();
+    const match = trimmed.match(/^1[\/\-.](\d{1,3})$/);
+    if (match) return parseFloat(match[1]);
+    return parseFloat(trimmed);
+  };
 
   const registrationSteps = [
+    { label: "Inserisci rapporto I/C mattino (dalle 6 alle 10)", value: icMattino, setter: setIcMattino, type: "text", placeholder: "I/C mattino" },
+    { label: "Inserisci rapporto I/C pomeriggio (dalle 10 alle 16)", value: icPomeriggio, setter: setIcPomeriggio, type: "text", placeholder: "I/C pomeriggio" },
+    { label: "Inserisci rapporto I/C sera (dalle 16 alle 22)", value: icSera, setter: setIcSera, type: "text", placeholder: "I/C sera" },
+    { label: "Inserisci fattore sensibilità insulinica (mg/dl)", value: fsi, setter: setFsi, type: "number", placeholder: "FSI" },
+    { label: "Inserisci glicemia target", value: target, setter: setTarget, type: "number", placeholder: "Glicemia target" },
+    { label: "In che anno hai scoperto la malattia?", value: annoScoperta, setter: setAnnoScoperta, type: "number", placeholder: "Anno scoperta malattia" },
     { label: "In che anno sei nato?", value: annoNascita, setter: setAnnoNascita, type: "number", placeholder: "Anno di nascita" },
     { label: "In che città vivi?", value: citta, setter: setCitta, type: "text", placeholder: "Città" },
     { label: "Quanto pesi?", value: peso, setter: setPeso, type: "number", placeholder: "Peso (kg)" },
     { label: "Quanto sei alto?", value: altezza, setter: setAltezza, type: "number", placeholder: "Altezza (cm)" },
+    { label: "Che dispositivo utilizzi per insulina?", value: device, setter: setDevice, type: "text", placeholder: "Device per insulina" },
+    { label: "Presso quale centro sei in cura?", value: centro, setter: setCentro, type: "text", placeholder: "Centro diabetologico" },
     { label: "Disclaimer", type: "disclaimer" }
   ];
 
@@ -72,10 +97,18 @@ const Auth = ({ onLogin }) => {
         const { error: insertError } = await supabase.from("users").insert({
           id: userId,
           email,
+          ic_mattino: icMattino ? normalizeIC(icMattino) : null,
+          ic_pomeriggio: icPomeriggio ? normalizeIC(icPomeriggio) : null,
+          ic_sera: icSera ? normalizeIC(icSera) : null,
+          fsi: fsi ? parseFloat(fsi) : null,
+          glicemia_target: target ? parseFloat(target) : null,
+          anno_scoperta: annoScoperta ? parseInt(annoScoperta) : null,
           anno_nascita: annoNascita ? parseInt(annoNascita) : null,
           citta,
           peso: peso ? parseFloat(peso) : null,
           altezza: altezza ? parseFloat(altezza) : null,
+          device,
+          centro_diabetologico: centro,
         });
         if (insertError) throw insertError;
         if (!data.user.email_confirmed_at) {
@@ -116,14 +149,14 @@ const Auth = ({ onLogin }) => {
       <div className="container">
         <img src="/logo.png" alt="CarboZen Logo" className="logo-image" />
         <div className="card-section card-green">
-          <h2 className="titlesec">Registrazione completata 🎉</h2>
+          <h2 className="titlesec">REGISTRAZIONE COMPLETATA 🎉</h2>
           <p className="instructions">
-            Abbiamo inviato una mail di conferma a <strong>{email}</strong>.<br />
-            Controlla la casella di posta e clicca sul link per attivare il tuo account.
+            ABBIAMO INVIATO UNA MAIL DI CONFERMA A <strong>{email}</strong>.<br />
+            CONTROLLA LA TUA CASELLA DI POSTA E CLICCA SUL LINK PER CONFERMARE.
           </p>
           <div className="wizard-buttons">
-            <button onClick={handleResendEmail} className="custom-button">Reinvia email di conferma</button>
-            <button onClick={() => setIsRegistered(false)} className="custom-button">Torna al login</button>
+            <button onClick={handleResendEmail} className="custom-button">REINVIA MAIL DI CONFERMA</button>
+            <button onClick={() => setIsRegistered(false)} className="custom-button">TORNA AL LOGIN</button>
           </div>
           {resendMessage && <p style={{ marginTop: "1rem", color: "green" }}>{resendMessage}</p>}
         </div>
@@ -147,12 +180,12 @@ const Auth = ({ onLogin }) => {
         {!isRegistering && (
           <>
             <label className="form-label">
-              Inserisci mail:
+              INSERISCI MAIL:
               <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="glicemia-input2" />
             </label>
             <br />
             <label className="form-label">
-              Inserisci password:
+              INSERISCI PASSWORD:
               <div style={{ position: "relative" }}>
                 <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="glicemia-input2" style={{ paddingRight: "35px" }} />
                 <span onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: "#555" }}>
@@ -170,12 +203,12 @@ const Auth = ({ onLogin }) => {
         {isRegistering && !wizardStarted && (
           <>
             <label className="form-label">
-              Inserisci mail:
+              INSERISCI MAIL:
               <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="glicemia-input2" />
             </label>
             <br />
             <label className="form-label">
-              Inserisci password:
+              INSERISCI PASSWORD:
               <div style={{ position: "relative" }}>
                 <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="glicemia-input2" style={{ paddingRight: "35px" }} />
                 <span onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: "#555" }}>
@@ -185,7 +218,7 @@ const Auth = ({ onLogin }) => {
             </label>
             <br />
             <label className="form-label">
-              Conferma password:
+              CONFERMA PASSWORD:
               <div style={{ position: "relative" }}>
                 <input type={showConfirmPassword ? "text" : "password"} placeholder="Conferma password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="glicemia-input2" style={{ paddingRight: "35px" }} />
                 <span onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", cursor: "pointer", color: "#555" }}>
@@ -204,19 +237,19 @@ const Auth = ({ onLogin }) => {
           <>
             {registrationSteps[currentStep].type === "disclaimer" ? (
               <>
-                <h3 className="titlesec">Disclaimer</h3>
+                <h3 className="titlesec">DISCLAIMER</h3>
                 <div style={{ marginTop: "1rem" }}>
                   <input type="checkbox" id="disclaimer" checked={disclaimerAccepted} onChange={(e) => setDisclaimerAccepted(e.target.checked)} />
                   <label className="form-label" htmlFor="disclaimer" style={{ marginLeft: "0.5rem" }}>
-                    Dichiaro di avere letto le condizioni nella sezione{" "}
-                    <a href="https://carbozen.it/disclaimer" target="_blank" rel="noopener noreferrer">Disclaimer</a>{" "}
-                    del sito
+                    DICHIARO DI AVERE LETTO LE CONDIZIONI NELLA SEZIONE {" "}
+                    <a href="https://carbozen.it/disclaimer" target="_blank" rel="noopener noreferrer">DISCLAIMER</a>{" "}
+                    DEL SITO
                   </label>
                 </div>
               </>
             ) : (
               <>
-                <h3 className="titlesec">Dati utente</h3>
+                <h3 className="titlesec">DATI UTENTE</h3>
                 <label className="form-label">
                   {registrationSteps[currentStep].label}
                   <input type={registrationSteps[currentStep].type} placeholder={registrationSteps[currentStep].placeholder} value={registrationSteps[currentStep].value} onChange={(e) => registrationSteps[currentStep].setter(e.target.value)} className="glicemia-input2" />
@@ -225,11 +258,11 @@ const Auth = ({ onLogin }) => {
             )}
 
             <div className="wizard-buttons">
-              {currentStep > 0 && <button onClick={prevStep} className="custom-button">Indietro</button>}
+              {currentStep > 0 && <button onClick={prevStep} className="custom-button">INDIETRO</button>}
               {currentStep < registrationSteps.length - 1 ? (
-                <button onClick={nextStep} className="custom-button">Avanti</button>
+                <button onClick={nextStep} className="custom-button">AVANTI</button>
               ) : (
-                <button onClick={handleAuth} className="custom-button">Registrati</button>
+                <button onClick={handleAuth} className="custom-button">REGISTRATI</button>
               )}
             </div>
           </>
@@ -250,7 +283,7 @@ const Auth = ({ onLogin }) => {
 
         {!isRegistering && (
           <p style={{ marginTop: "1rem", textAlign: "center" }}>
-            <a href="/forgot-password" className="form-label">Password dimenticata?</a>
+            <a href="/forgot-password" className="form-label">PASSWORD DIMENTICATA?</a>
           </p>
         )}
 
