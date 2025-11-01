@@ -119,7 +119,7 @@ const Settings = ({ userId }) => {
   return (
     <div className="container">
       <div className="header-with-button">
-        <h1 className="title">⚙️ IMPOSTAZIONI</h1>
+        <h1 className="title">{t("impostazioni")}</h1>
         <p className="instructions">
           RICORDATI SEMPRE CHE CARBOZEN NON E' UN DISPOSITIVO MEDICO, I CALCOLI FORNITI HANNO SOLO SCOPO INFORMATIVO E NON SOSTITUISCONO IL PARERE DI UN MEDICO. CONSULTARE SEMPRE UN PROFESSIONISTA SANITARIO PRIMA DI PRENDERE DECISIONI RIGUARDANTI LA PROPRIA SALUTE.PER MAGGIORI INFORMAZIONI SULLE FORMULE UTILIZZATE CONSULTARE LA SEZIONE{" "}
           <a href="https://www.carbozen.it/disclaimer" target="_blank" rel="noopener noreferrer">

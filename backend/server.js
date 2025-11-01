@@ -21,7 +21,6 @@ const allowedOrigins = [
   "https://cz4.netlify.app",
   "ionic://localhost",
   "https://localhost",
-  "https://cz5.netlify.app",
 ];
 
 const corsOptions = {

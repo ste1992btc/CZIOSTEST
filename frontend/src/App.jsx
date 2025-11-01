@@ -389,14 +389,16 @@ const App = () => {
               <p className="instructions">
                 {t("fraseSottoLogo")}
               </p>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                style={{ marginBottom: "1rem" }}
-              >
-                <option value="it">Italiano</option>
-                <option value="en">English</option>
-              </select>
+              <div className="language-selector">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="language-dropdown"
+                >
+                  <option value="it">🇮🇹 Italiano</option>
+                  <option value="en">🇬🇧 English</option>
+                </select>
+              </div>
 
               <div className="wizard-card" style={{ position: "relative", minHeight: "400px" }}>
                 {/* LiquidEtherWrapper sempre presente, visibile solo durante loading */}
