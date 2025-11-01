@@ -13,6 +13,7 @@ import TypeWriterEffect from "react-typewriter-effect";
 import BottomNav from "./BottomNav";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts"; // 🆕 import grafico
 import LiquidEtherWrapper from "./LiquidEtherWrapper";
+import i18n from "./i18n";
 import { useTranslation } from "react-i18next";
 
 
