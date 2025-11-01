@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import "./App.css";
+import { useTranslation } from "react-i18next";
 
 const Settings = ({ userId }) => {
   const [settings, setSettings] = useState({
@@ -115,6 +116,9 @@ const Settings = ({ userId }) => {
       console.error("Errore durante il logout:", error);
     }
   };
+
+  const { t } = useTranslation();
+
 
   return (
     <div className="container">
@@ -326,3 +330,4 @@ const Settings = ({ userId }) => {
 };
 
 export default Settings;
+
